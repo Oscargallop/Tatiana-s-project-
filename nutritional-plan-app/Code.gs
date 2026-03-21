@@ -10,13 +10,13 @@ function doGet() {
 
 /**
  * Determines which plan (sheet) to use based on the week of the month.
- * Logic: Week 1: Plan1, Week 2: Plan2, Week 3: Plan1, Week 4: Plan2, etc.
+ * Logic: Week 1: Semana 1, Week 2: Semana 2, Week 3: Semana 1, Week 4: Semana 2, etc.
  * @return {string} The name of the sheet to use.
  */
 function getPlanSheetName() {
   const date = new Date();
   const weekOfMonth = Math.ceil(date.getDate() / 7);
-  return (weekOfMonth % 2 !== 0) ? 'Plan1' : 'Plan2';
+  return (weekOfMonth % 2 !== 0) ? 'Semana 1' : 'Semana 2';
 }
 
 /**
@@ -71,12 +71,12 @@ function getTodayPlan() {
 }
 
 /**
- * Gets the plan for both weeks (Plan1 and Plan2).
+ * Gets the plan for both weeks (Semana 1 and Semana 2).
  * @return {Object} An object containing plans for both weeks.
  */
 function getTwoWeekPlan() {
-  const plan1Data = getPlanData('Plan1');
-  const plan2Data = getPlanData('Plan2');
+  const plan1Data = getPlanData('Semana 1');
+  const plan2Data = getPlanData('Semana 2');
 
   return {
     plan1: plan1Data,

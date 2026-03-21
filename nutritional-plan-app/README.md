@@ -4,7 +4,7 @@ This application allows users to view their nutritional plan based on the curren
 
 ## Google Sheet Structure
 
-Create a Google Sheet with two tabs (sheets) named `Plan1` and `Plan2`.
+Create a Google Sheet with two tabs (sheets) named `Semana 1` and `Semana 2`.
 
 Each sheet should have the following structure:
 
@@ -20,11 +20,11 @@ Each sheet should have the following structure:
 
 ## Logic
 
-- **Week 1 of the month**: Uses `Plan1`
-- **Week 2 of the month**: Uses `Plan2`
-- **Week 3 of the month**: Uses `Plan1`
-- **Week 4 of the month**: Uses `Plan2`
-- **Week 5 of the month** (if applicable): Uses `Plan1`
+- **Week 1 of the month**: Uses `Semana 1`
+- **Week 2 of the month**: Uses `Semana 2`
+- **Week 3 of the month**: Uses `Semana 1`
+- **Week 4 of the month**: Uses `Semana 2`
+- **Week 5 of the month** (if applicable): Uses `Semana 1`
 
 ## Files
 
