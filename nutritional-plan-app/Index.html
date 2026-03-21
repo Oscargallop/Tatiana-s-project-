@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1, h2, h3 {
+        color: #333;
+        text-align: center;
+      }
+      .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .btn:hover {
+        background-color: #0056b3;
+      }
+      #loading {
+        text-align: center;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      .error {
+        color: #d9534f;
+        background-color: #f2dede;
+        padding: 15px;
+        border: 1px solid #ebccd1;
+        border-radius: 4px;
+        text-align: center;
+      }
+      .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #f8f9fa;
+      }
+      .today-plan {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+      .meal-card {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .meal-card h3 {
+        margin-top: 0;
+        font-size: 1.1em;
+        color: #495057;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Plan Nutricional</h1>
+
+      <div class="button-group">
+        <button id="btnTwoWeeks" class="btn">Previsualizar 2 Semanas</button>
+        <button id="btnToday" class="btn">Plan de Hoy</button>
+      </div>
+
+      <div id="loading" style="display:none;">Cargando...</div>
+
+      <div id="content"></div>
+    </div>
+
+    <script>
+      document.getElementById('btnToday').addEventListener('click', loadTodayPlan);
+      document.getElementById('btnTwoWeeks').addEventListener('click', loadTwoWeekPlan);
+
+      function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+        document.getElementById('content').innerHTML = show ? '' : document.getElementById('content').innerHTML;
+      }
+
+      function loadTodayPlan() {
+        showLoading(true);
+        google.script.run
+          .withSuccessHandler(displayTodayPlan)
+          .withFailureHandler(handleError)
+          .getTodayPlan();
+      }
+
+      function loadTwoWeekPlan() {
+        showLoading(true);
+        google.script.run
+          .withSuccessHandler(displayTwoWeekPlan)
+          .withFailureHandler(handleError)
+          .getTwoWeekPlan();
+      }
+
+      function displayTodayPlan(data) {
+        showLoading(false);
+        const content = document.getElementById('content');
+
+        if (data.error) {
+          content.innerHTML = `<p class="error">${data.error}</p>`;
+          return;
+        }
+
+        let html = `<h2>Plan para hoy: ${data.day} (${data.sheet})</h2>`;
+        html += '<div class="today-plan">';
+        for (const meal in data.meals) {
+          html += `
+            <div class="meal-card">
+              <h3>${meal}</h3>
+              <p>${data.meals[meal]}</p>
+            </div>
+          `;
+        }
+        html += '</div>';
+        content.innerHTML = html;
+      }
+
+      function displayTwoWeekPlan(data) {
+        showLoading(false);
+        const content = document.getElementById('content');
+
+        let html = '<h2>Plan de Dos Semanas</h2>';
+
+        html += '<h3>Semana 1 (Plan1)</h3>';
+        html += generateTableHtml(data.plan1);
+
+        html += '<h3>Semana 2 (Plan2)</h3>';
+        html += generateTableHtml(data.plan2);
+
+        content.innerHTML = html;
+      }
+
+      function generateTableHtml(data) {
+        if (!data || data.length === 0) return '<p>No hay datos disponibles.</p>';
+
+        let html = '<div class="table-responsive"><table><thead><tr>';
+        // Headers
+        data[0].forEach(header => {
+          html += `<th>${header}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        // Rows
+        for (let i = 1; i < data.length; i++) {
+          html += '<tr>';
+          data[i].forEach(cell => {
+            html += `<td>${cell}</td>`;
+          });
+          html += '</tr>';
+        }
+
+        html += '</tbody></table></div>';
+        return html;
+      }
+
+      function handleError(error) {
+        showLoading(false);
+        document.getElementById('content').innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      }
+    </script>
+  </body>
+</html>
