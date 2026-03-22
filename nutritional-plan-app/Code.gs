@@ -76,7 +76,8 @@ function getTodayPlan() {
 
   // Iterate through MEAL_TITLES keys to ensure the correct order and translated titles
   Object.keys(MEAL_TITLES).forEach(mealKey => {
-    const colIndex = headers.indexOf(mealKey);
+    // Case-insensitive search with trimmed headers
+    const colIndex = headers.findIndex(h => h.toString().trim().toLowerCase() === mealKey.toLowerCase());
     if (colIndex !== -1) {
       result.meals.push({
         title: MEAL_TITLES[mealKey],
@@ -97,9 +98,13 @@ function translateHeaders(data) {
   if (!data || data.length === 0) return data;
 
   const headers = data[0];
+  const mealKeys = Object.keys(MEAL_TITLES);
+
   for (let i = 0; i < headers.length; i++) {
-    if (MEAL_TITLES[headers[i]]) {
-      headers[i] = MEAL_TITLES[headers[i]];
+    const headerStr = headers[i].toString().trim();
+    const mealKey = mealKeys.find(k => k.toLowerCase() === headerStr.toLowerCase());
+    if (mealKey) {
+      headers[i] = MEAL_TITLES[mealKey];
     }
   }
   return data;
