@@ -149,14 +149,15 @@
 
         let html = `<h2>Plan para hoy: ${data.day} (${data.sheet})</h2>`;
         html += '<div class="today-plan">';
-        for (const meal in data.meals) {
+        // Iterate through the ordered meals array from the backend
+        data.meals.forEach(meal => {
           html += `
             <div class="meal-card">
-              <h3>${meal}</h3>
-              <p>${data.meals[meal]}</p>
+              <h3>${meal.title}</h3>
+              <p>${meal.content}</p>
             </div>
           `;
-        }
+        });
         html += '</div>';
         content.innerHTML = html;
       }

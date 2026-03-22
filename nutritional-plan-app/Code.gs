@@ -1,4 +1,15 @@
 /**
+ * Global constant for meal titles mapping.
+ */
+const MEAL_TITLES = {
+  'Meal 1': 'Desayuno',
+  'Meal 2': 'Medias Nueves',
+  'Meal 3': 'Almuerzo',
+  'Meal 4': 'Onces',
+  'Meal 5': 'Comida'
+};
+
+/**
  * Serves the web app UI.
  * @return {HtmlService.HtmlOutput} The HTML output of the web app.
  */
@@ -60,14 +71,38 @@ function getTodayPlan() {
   const result = {
     day: dayName,
     sheet: sheetName,
-    meals: {}
+    meals: []
   };
 
-  for (let i = 1; i < headers.length; i++) {
-    result.meals[headers[i]] = dayPlan[i];
-  }
+  // Iterate through MEAL_TITLES keys to ensure the correct order and translated titles
+  Object.keys(MEAL_TITLES).forEach(mealKey => {
+    const colIndex = headers.indexOf(mealKey);
+    if (colIndex !== -1) {
+      result.meals.push({
+        title: MEAL_TITLES[mealKey],
+        content: dayPlan[colIndex]
+      });
+    }
+  });
 
   return result;
+}
+
+/**
+ * Translates headers in the plan data.
+ * @param {Array<Array<string>>} data The plan data.
+ * @return {Array<Array<string>>} The data with translated headers.
+ */
+function translateHeaders(data) {
+  if (!data || data.length === 0) return data;
+
+  const headers = data[0];
+  for (let i = 0; i < headers.length; i++) {
+    if (MEAL_TITLES[headers[i]]) {
+      headers[i] = MEAL_TITLES[headers[i]];
+    }
+  }
+  return data;
 }
 
 /**
@@ -79,8 +114,8 @@ function getTwoWeekPlan() {
   const plan2Data = getPlanData('Semana 2');
 
   return {
-    plan1: plan1Data,
-    plan2: plan2Data
+    plan1: translateHeaders(plan1Data),
+    plan2: translateHeaders(plan2Data)
   };
 }
 
@@ -92,8 +127,4 @@ function testLogic() {
   const dayName = getCurrentDayName();
   Logger.log('Current Sheet: ' + sheetName);
   Logger.log('Current Day: ' + dayName);
-
-  // To test different dates, you can temporarily modify getPlanSheetName and getCurrentDayName
-  // for example, use a mock date:
-  // const mockDate = new Date(2023, 9, 10); // Oct 10, 2023
 }
